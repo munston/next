@@ -5,21 +5,15 @@ implements a functor via a lens to a shifting cursor
 a complete pass of the suspended traversal is required at the functor instance
 -}
 
-class Lens a b where
- get :: b -> a
- set :: a -> b -> b
+class Next ix a | a -> ix where
+ nudge :: (ix -> ix,(ix -> ix) -> a -> a)
 
-class Next a where
- next :: a -> a
-
-type Nudge ix a = (Lens ix a,Next ix)
-
-nudge :: Nudge ix a => a -> a
-nudge a = set (next ix) a
+next :: Next ix a => a -> a
+next a = g f a
  where
-  ix = get a
+  (f,g) = nudge
   
-class (Nudge ix b,Lens a b) => Zipper ix a b where
+class Next ix b => Zipper ix a b where
  lengthZ :: Int
  getZ :: ix -> b -> a
  setZ :: ix -> a -> b -> b
