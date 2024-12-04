@@ -24,11 +24,11 @@ editZ :: Zipper ix a b => (a->a) -> (b->b)
 editZ f x = iterate g x !! l 
  where
   l = lengthZ x
-  g x = z
+  g x = next z
    where
     ix = cursor x
     y = getZ ix x
     z = setZ ix (f y) x
 
-fmapDefaultZ :: Zipper ix a (f a) => (a->a) -> f a -> f a
-fmapDefaultZ f xs = undefined
+monoMap :: Zipper ix a (f a) => (a->a) -> f a -> f a
+monoMap = editZ 
