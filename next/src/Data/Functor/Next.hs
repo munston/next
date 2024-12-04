@@ -1,3 +1,4 @@
+{-# Language MultiParamTypeClasses , FunctionalDependencies #-}
 module Data.Functor.Next where
 
 {-
@@ -6,6 +7,7 @@ a complete pass of the suspended traversal is required at the functor instance
 -}
 
 class Next ix a | a -> ix where
+ cursor :: a -> ix
  nudge :: (ix -> ix,(ix -> ix) -> a -> a)
 
 next :: Next ix a => a -> a
@@ -13,10 +15,20 @@ next a = g f a
  where
   (f,g) = nudge
   
-class Next ix b => Zipper ix a b where
- lengthZ :: Int
+class Next ix b => Zipper ix a b | b -> a, b -> ix where
+ lengthZ :: b -> Int
  getZ :: ix -> b -> a
  setZ :: ix -> a -> b -> b
 
+editZ :: Zipper ix a b => (a->a) -> (b->b)
+editZ f x = iterate g x !! l 
+ where
+  l = lengthZ x
+  g x = z
+   where
+    ix = cursor x
+    y = getZ ix x
+    z = setZ ix (f y) x
+
 fmapDefaultZ :: Zipper ix a (f a) => (a->a) -> f a -> f a
-fmapDefaultZ = undefined
+fmapDefaultZ f xs = undefined
