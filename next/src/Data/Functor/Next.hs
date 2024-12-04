@@ -21,7 +21,7 @@ class Next ix b => Zipper ix a b | b -> a, b -> ix where
  setZ :: ix -> a -> b -> b
 
 editZ :: Zipper ix a b => (a->a) -> (b->b)
-editZ f x
+editZ f x = z
  where
   ix = cursor x
   y = getZ ix x
