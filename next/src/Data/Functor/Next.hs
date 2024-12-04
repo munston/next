@@ -21,14 +21,11 @@ class Next ix b => Zipper ix a b | b -> a, b -> ix where
  setZ :: ix -> a -> b -> b
 
 editZ :: Zipper ix a b => (a->a) -> (b->b)
-editZ f x = iterate g x !! l 
+editZ f x
  where
-  l = lengthZ x
-  g x = next z
-   where
-    ix = cursor x
-    y = getZ ix x
-    z = setZ ix (f y) x
+  ix = cursor x
+  y = getZ ix x
+  z = setZ ix (f y) x
 
 monoMap :: Zipper ix a (f a) => (a->a) -> f a -> f a
-monoMap = editZ 
+monoMap f x = iterate (next . editZ f) x !! (lengthZ x) 
